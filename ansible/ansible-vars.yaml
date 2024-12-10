@@ -1,0 +1,19 @@
+docker_service_name: "docker"
+cache_time: 3600
+docker_package_name: "docker.io"
+# ecr-vars.yaml
+ecr_url: "872515293786.dkr.ecr.us-east-1.amazonaws.com/enis-app"
+ecr_repository: "enis-app"
+region: "us-east-1"
+frontend_image_tag: "frontend-1.0"
+backend_image_tag: "backend-1.0"
+# Docker variables
+docker_network_name: "my_bridge"
+compose_local_path: "/home/takwa/Devops-Cloud-TP_ENIS/enis-app-tp/docker-compose.yaml"  # Replace with your local path of the updated file
+compose_remote_path: "/home/ubuntu/docker-compose.yaml"
+project_src_path: "/home/ubuntu"
+backend_container_name: "backend-app"
+# app credentials
+superuser_username: "admin"
+superuser_email: "admin@example.com"
+superuser_password: "SuperSecretPassword"

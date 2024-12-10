@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  backend-app:
+    image: 872515293786.dkr.ecr.us-east-1.amazonaws.com/enis-app:backend-1.0 # Prebuilt backend image from ECR
+    container_name: backend-app
+    restart: always
+    ports:
+      - "8000:8000" # Expose backend service on port 8000
+    environment:
+      DB_NAME: enis_tp
+      DB_USER: dbuser
+      DB_PASSWORD: DBpassword2024 # Consider using a secret management solution for enhanced security
+      DB_HOST: mysql # Point to the name of the mysql service
+      DB_PORT: 3306
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - my_bridge
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/admin/login/?next=/admin/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  frontend-app:
+    image: 872515293786.dkr.ecr.us-east-1.amazonaws.com/enis-app:frontend-1.0 # Prebuilt frontend image from ECR
+    container_name: frontend-app
+    restart: always
+    ports:
+      - "81:80" # Map port 80 of the container to port 81 of the host
+    depends_on:
+      mysql:
+        condition: service_healthy
+      backend-app:
+        condition: service_healthy
+    networks:
+      - my_bridge
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+
+  mysql:
+    image: mysql:5.7 # Or use another version of MySQL that fits your needs
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: enis_tp
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: DBpassword2024
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost --silent || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - my_bridge
+
+networks:
+  my_bridge:
+    external: true # Use an external network named "my_bridge"
